@@ -43,8 +43,7 @@ MONEY = load_image("images/money.png", (200, 200))
 SATIETY = load_image("images/satiety.png", (200, 200))
 
 # ITEMS -->
-GLASSES = load_image("images/glasses.png", (200, 150))
-SUNGLASSES = load_image("images/items/sunglasses.png", (200, 150))
+
 
 # TOYS -->
 BALL = load_image("images/toys/ball.png", (100, 100))
@@ -58,3 +57,19 @@ BLACK = [0, 0, 0]
 
 FONT = pygame.freetype.Font("fonts/main_font.ttf", 50)
 FPS = 60
+
+# FOOD -->
+APPLE = load_image("images/food/apple.png", (200, 200))
+BONE = load_image("images/food/bone.png", (200, 200))
+DOG_FOOD = load_image("images/food/dog_food.png", (200, 200))
+DOG_FOOD_ELITE = load_image("images/food/dog_food_elite.png", (200, 200))
+MEAT = load_image("images/food/meat.png", (200, 200))
+MEDICINE = load_image("images/food/medicine.png", (200, 200))
+
+# CLOTHES -->
+GLASSES = load_image("images/glasses.png", (200, 150))
+SUNGLASSES = load_image("images/items/sunglasses.png", (200, 150))
+# DOG_FOOD = load_image("images/food/dog_food.png", (200, 200))
+# DOG_FOOD_ELITE = load_image("images/food/dog_food_elite.png", (200, 200))
+# MEAT = load_image("images/food/meat.png", (200, 200))
+# MEDICINE = load_image("images/food/medicine.png", (200, 200))

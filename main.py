@@ -27,11 +27,23 @@ class Game:
         self.pet_main = pet.Pet(530, 200, PET)
         self.pet_game = pet.Pet(650, 550, PET_MINI)
         # INDICATOR DATA -->
-        self.happiness = indicator.Indicator(HAPPINESS, 5, 5)
-        self.satiety = indicator.Indicator(SATIETY, 5, 145)
-        self.health = indicator.Indicator(HEALTH, 5, 285)
-        self.money = indicator.Indicator(MONEY, 5, 425)
+        self.happiness = indicator.Indicator(HAPPINESS, 5, 5, "pass")
+        self.satiety = indicator.Indicator(SATIETY, 5, 145, "pass")
+        self.health = indicator.Indicator(HEALTH, 5, 285, "pass")
+        self.money = indicator.Indicator(MONEY, 5, 425, "pass")
         self.indicators = [self.happiness, self.satiety, self.health, self.money]
+        # FOOD -->
+        self.apple = indicator.Indicator(APPLE, 630, 360, "--Apple-")
+        self.bone = indicator.Indicator(BONE, 630, 360, ">>Bone<<")
+        self.dog_food = indicator.Indicator(DOG_FOOD, 630, 360, ">>Dog Food<<")
+        self.dog_food_elite = indicator.Indicator(DOG_FOOD_ELITE, 630, 360, ">>Dog Food Elite<<")
+        self.meat = indicator.Indicator(MEAT, 630, 360, ">>Meat<<")
+        self.medicine = indicator.Indicator(MEDICINE, 630, 360, ">>Medicine<<")
+        self.food = [self.apple, self.bone, self.dog_food, self.dog_food_elite, self.meat, self.medicine]
+        # CLOTHES & ITEMS -->
+        self.glasses = indicator.Indicator(GLASSES, 630, 360, ">>Cool Glasses<<")
+        self.sunglasses = indicator.Indicator(SUNGLASSES, 630, 360, ">>Sun Glasses<<")
+        self.items = [self.glasses, self.sunglasses]
         # TEXT DATA -->
         self.font = FONT
         self.happiness_value = 100
@@ -39,13 +51,16 @@ class Game:
         self.health_value = 100
         self.money_value = 0
         self.score_value = 0
-        self.food_prices = [199, 230, 60]
-        self.clothing_prices = [80, 40, 200]
+        self.food_prices = [195, 230, 60, 35, 75, 90]
+        self.clothing_prices = [80, 200]
         self.option = 0
         # MINI GAME DATA-->
         self.falling_toys = pg.USEREVENT
         pg.time.set_timer(self.falling_toys, 500)
         self.toys = []
+        # OTHER -->
+        self.satiety_gone = pg.USEREVENT + 1
+        pg.time.set_timer(self.satiety_gone, 1500)
 
     def events(self):
         for event in pg.event.get():
@@ -66,9 +81,15 @@ class Game:
                 for button_ in self.buttons:
                     if button_.rect.collidepoint(event.pos) and self.current_tub != 0:
                         if button_.text == "buy" and self.current_tub == 2:
-                            print("buy")
+                            if self.money_value >= self.clothing_prices[self.option]:
+                                self.money_value -= self.clothing_prices[self.option]
                         elif button_.text == "eat" and self.current_tub == 1:
-                            print("eat")
+                            if self.money_value >= self.food_prices[self.option]:
+                                self.money_value -= self.food_prices[self.option]
+                                self.satiety_value += 10
+                                if self.satiety_value > 100:
+                                    self.satiety_value = 100
+
                 if RECT_BACK.collidepoint(event.pos):
                     if self.current_tub in [1, 2]:
                         if self.option - 1 >= 0:
@@ -80,7 +101,6 @@ class Game:
                     elif self.current_tub == 2:
                         if self.option + 1 < len(self.clothing_prices):
                             self.option += 1
-
                 if self.pet_main.rect.collidepoint(event.pos) and self.current_tub == 0:
                     self.money_value += 10
                 elif RECT_EXIT.collidepoint(event.pos) and self.current_tub != 0:
@@ -98,6 +118,8 @@ class Game:
                 if event.type == self.falling_toys and self.current_tub == 3:
                     new_toy = mini_game.FallingToys(random.randint(145, 1100), 50)
                     self.toys.append(new_toy)
+            if event.type == self.satiety_gone:
+                self.satiety_value -= 1
 
     def update(self):
         if self.current_tub == 3:
@@ -135,13 +157,17 @@ class Game:
                 self.button_eat.render(self.display)
                 self.font.render_to(self.display, [700, 625], self.button_eat.text, BROWN)
                 self.font.render_to(self.display, [705, 270], str(self.food_prices[self.option]), BROWN)
+                self.font.render_to(self.display, [655, 170], self.food[self.option].text, BROWN)
+                self.food[self.option].render(self.display)
                 self.display.blit(BACK, RECT_BACK)
                 self.display.blit(FORWARD, RECT_FORWARD)
             elif self.current_tub == 2:
                 self.display.blit(TAB, (0, 0))
                 self.button_buy.render(self.display)
                 self.font.render_to(self.display, [700, 625], self.button_buy.text, BROWN)
+                self.font.render_to(self.display, [655, 170], str(self.items[self.option].text), BROWN)
                 self.font.render_to(self.display, [705, 270], str(self.clothing_prices[self.option]), BROWN)
+                self.items[self.option].render(self.display)
                 self.display.blit(BACK, RECT_BACK)
                 self.display.blit(FORWARD, RECT_FORWARD)
             elif self.current_tub == 3:
