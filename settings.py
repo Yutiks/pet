@@ -42,8 +42,8 @@ HEALTH = load_image("images/health.png", (200, 200))
 MONEY = load_image("images/money.png", (200, 200))
 SATIETY = load_image("images/satiety.png", (200, 200))
 
-# ITEMS -->
-
+TOP_LABEL_ON = load_image("images/menu/top_label_on.png", (1400, 700))
+TOP_LABEL_OFF = load_image("images/menu/top_label_off.png", (1400, 700))
 
 # TOYS -->
 BALL = load_image("images/toys/ball.png", (100, 100))
@@ -54,6 +54,9 @@ RED_BONE = load_image("images/toys/red_bone.png", (100, 100))
 BROWN = [82, 45, 20]
 BLUE = [3, 40, 230]
 BLACK = [0, 0, 0]
+RED = [255, 0, 0]
+GOLD = [255, 215, 0]
+GREEN = [0, 255, 0]
 
 FONT = pygame.freetype.Font("fonts/main_font.ttf", 50)
 FPS = 60
@@ -66,10 +69,10 @@ DOG_FOOD_ELITE = load_image("images/food/dog_food_elite.png", (200, 200))
 MEAT = load_image("images/food/meat.png", (200, 200))
 MEDICINE = load_image("images/food/medicine.png", (200, 200))
 
-# CLOTHES -->
+# CLOTHES & ITEMS -->
 GLASSES = load_image("images/glasses.png", (200, 150))
-SUNGLASSES = load_image("images/items/sunglasses.png", (200, 150))
-# DOG_FOOD = load_image("images/food/dog_food.png", (200, 200))
-# DOG_FOOD_ELITE = load_image("images/food/dog_food_elite.png", (200, 200))
-# MEAT = load_image("images/food/meat.png", (200, 200))
-# MEDICINE = load_image("images/food/medicine.png", (200, 200))
+SUNGLASSES = load_image("images/items/sunglasses.png", (350, 300))
+BLUE_TSHIRT = load_image("images/items/blue t-shirt.png", (350, 600))
+RED_TSHIRT = load_image("images/items/red t-shirt.png", (350, 600))
+YELLOW_TSHIRT = load_image("images/items/yellow t-shirt.png", (350, 600))
+BOOTS = load_image("images/items/boots.png", (410, 410))
