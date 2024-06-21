@@ -58,8 +58,10 @@ RED = [255, 0, 0]
 GOLD = [255, 215, 0]
 GREEN = [0, 255, 0]
 
-FONT = pygame.freetype.Font("fonts/main_font.ttf", 50)
+FONT_50 = pygame.freetype.Font("fonts/main_font.ttf", 50)
+FONT_100 = pygame.freetype.Font("fonts/main_font.ttf", 100)
 FPS = 60
+GO = load_image("images/go_1.PNG", (200, 200))
 
 # FOOD -->
 APPLE = load_image("images/food/apple.png", (200, 200))

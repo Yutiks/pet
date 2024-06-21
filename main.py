@@ -47,22 +47,23 @@ class Game:
         self.medicine = indicator.Indicator(MEDICINE, 640, 360, ">>Medicine<<")
         self.food = [self.apple, self.bone, self.dog_food, self.dog_food_elite, self.meat, self.medicine]
         # CLOTHES & ITEMS -->
-        self.glasses = indicator.Indicator(GLASSES, 630, 360, ">>Cool Glasses<<", "glasses")
-        self.sunglasses = indicator.Indicator(SUNGLASSES, 630, 360, ">>Sun Glasses<<", "glasses")
-        self.blue_tshirt = indicator.Indicator(BLUE_TSHIRT, 630, 360, ">>blue t-shirt<<", "t-shirt")
-        self.red_tshirt = indicator.Indicator(RED_TSHIRT, 630, 360, ">>red t-shirt<<", "t-shirt")
-        self.yellow_tshirt = indicator.Indicator(YELLOW_TSHIRT, 630, 360, ">>yellow t-shirt<<", "t-shirt")
-        self.boots = indicator.Indicator(BOOTS, 630, 360, ">>cool sneakers<<", "boots")
+        self.glasses = indicator.Indicator(GLASSES, 630, 360, ">>Cool Glasses<<", "glasses", 0)
+        self.sunglasses = indicator.Indicator(SUNGLASSES, 630, 360, ">>Sun Glasses<<", "glasses", 0)
+        self.blue_tshirt = indicator.Indicator(BLUE_TSHIRT, 630, 360, ">>blue t-shirt<<", "t-shirt", 0)
+        self.red_tshirt = indicator.Indicator(RED_TSHIRT, 630, 360, ">>red t-shirt<<", "t-shirt", 0)
+        self.yellow_tshirt = indicator.Indicator(YELLOW_TSHIRT, 630, 360, ">>yellow t-shirt<<", "t-shirt", 0)
+        self.boots = indicator.Indicator(BOOTS, 630, 360, ">>cool sneakers<<", "boots", 0)
         self.items = [self.glasses, self.sunglasses, self.blue_tshirt, self.red_tshirt, self.yellow_tshirt, self.boots]
         # TEXT DATA -->
-        self.font = FONT
+        self.font_50 = FONT_50
+        self.font_100 = FONT_100
         self.happiness_value = 100
         self.satiety_value = 100
         self.health_value = 100
-        self.money_value = 1000
+        self.money_value = 10000
         self.score_value = 0
-        self.food_prices = [195, 230, 100, 145, 175, 190]
-        self.clothing_prices = [400, 200, 300, 300, 300, 250]
+        self.food_prices = (195, 230, 100, 145, 175, 190)
+        self.clothing_prices = (400, 200, 300, 300, 300, 250)
         self.option = 0
         # MINI GAME DATA-->
         self.falling_toys = pg.USEREVENT
@@ -72,10 +73,8 @@ class Game:
         self.satiety_gone = pg.USEREVENT + 1
         pg.time.set_timer(self.satiety_gone, 3000)
         self.purchased_clothes = []
-        self.wear_num = int
-        # self.wear_boots_num = int
-        # self.wear_glasses_num = int
-        # self.wear_tshirt_num = int
+        self.wear_num = []
+        self.timer = 0
 
     def events(self):
         for event in pg.event.get():
@@ -103,8 +102,14 @@ class Game:
                                     self.purchased_clothes.append(self.option)
                         # PUTTING ON CLOTHES -->
                         elif button_.text == "wear" and self.current_tub == 2:
-                            if self.wear_num != self.option and self.option in self.purchased_clothes:
-                                self.wear_num = self.option
+                            if self.option not in self.wear_num and self.option in self.purchased_clothes:
+                                self.wear_num.append(self.option)
+                                self.items[self.option].worn = 1
+                                for wear in self.wear_num:
+                                    if self.items[wear] != self.items[self.option]:
+                                        if self.items[wear].type == self.items[self.option].type:
+                                            self.wear_num.remove(wear)
+                                            self.items[wear].worn = 0
                         # BUYING FOOD -->
                         elif button_.text == "eat" and self.current_tub == 1:
                             if self.money_value >= self.food_prices[self.option]:
@@ -134,16 +139,22 @@ class Game:
                     self.toys = []
                     self.pet_game.rect_col.x = 650
                     self.option = 0
+                    self.timer = 0
             # MINI GAME EVENTS -->
             if self.current_tub == 3:
                 key = pygame.key.get_pressed()
-                if key[pygame.K_a] is True and self.pet_game.rect.left > 145:
-                    self.pet_game.rect.x -= 15
-                elif key[pygame.K_d] is True and self.pet_game.rect.right < 1515:
-                    self.pet_game.rect.x += 15
                 if event.type == self.falling_toys:
-                    new_toy = mini_game.FallingToys(random.randint(145, 1100), 50)
-                    self.toys.append(new_toy)
+                    if self.timer <= 4:
+                        self.timer += 1
+                    else:
+                        new_toy = mini_game.FallingToys(random.randint(145, 1100), 50)
+                        self.toys.append(new_toy)
+                if self.timer in [4, 5]:
+                    if key[pygame.K_a] is True and self.pet_game.rect.left > 145:
+                        self.pet_game.rect.x -= 15
+                    elif key[pygame.K_d] is True and self.pet_game.rect.right < 1515:
+                        self.pet_game.rect.x += 15
+
             # DECREASED SATIETY -->
             if event.type == self.satiety_gone:
                 self.satiety_value -= 1
@@ -161,6 +172,7 @@ class Game:
 
     def render(self):
         self.display.blit(BACKGROUND, [0, 0])
+
         for button in self.main_buttons:
             button.render(self.display)
         for indicator_ in self.indicators:
@@ -168,37 +180,35 @@ class Game:
         if self.current_tub == 0:
             self.pet_main.render(self.display)
             # RENDERING OF SELECTED CLOTHES -->
-            for wear in range(len(self.items)):
-                if wear == self.wear_num:
-                    if self.items[wear].text == ">>Cool Glasses<<":
-                        self.items[wear].rect = pg.Rect((615, 390), (0, 0))
-                    elif self.items[wear].text == ">>Sun Glasses<<":
-                        self.items[wear].rect = pg.Rect((530, 328), (0, 0))
-                    elif self.items[wear].text in [">>blue t-shirt<<", ">>red t-shirt<<", ">>yellow t-shirt<<"]:
-                        self.items[wear].rect = pg.Rect((530, 200), (0, 0))
-                    elif self.items[wear].text == ">>cool sneakers<<":
-                        self.items[wear].rect = pg.Rect((498, 340), (0, 0))
-                    self.items[wear].render(self.display)
+            self.items[0].rect = pg.Rect((615, 390), (0, 0))
+            self.items[1].rect = pg.Rect((530, 328), (0, 0))
+            self.items[2].rect = pg.Rect((530, 200), (0, 0))
+            self.items[3].rect = pg.Rect((530, 200), (0, 0))
+            self.items[4].rect = pg.Rect((530, 200), (0, 0))
+            self.items[5].rect = pg.Rect((498, 340), (0, 0))
+            for clothe in self.items:
+                if clothe.worn == 1:
+                    clothe.render(self.display)
         # RENDER OF INSCRIPTIONS -->
-        self.font.render_to(self.display, [1300, 125], self.button_food.text, BROWN)
-        self.font.render_to(self.display, [1270, 225], self.button_clothe.text, BROWN)
-        self.font.render_to(self.display, [1247, 325], self.button_game.text, BROWN)
-        self.font.render_to(self.display, [1270, 425], self.button_upgrade.text, BROWN)
+        self.font_50.render_to(self.display, [1300, 125], self.button_food.text, BROWN)
+        self.font_50.render_to(self.display, [1270, 225], self.button_clothe.text, BROWN)
+        self.font_50.render_to(self.display, [1247, 325], self.button_game.text, BROWN)
+        self.font_50.render_to(self.display, [1270, 425], self.button_upgrade.text, BROWN)
         # RENDER VALUES -->
-        self.font.render_to(self.display, [180, 100], f"{self.happiness_value}%", BLUE)
-        self.font.render_to(self.display, [180, 240], f"{self.satiety_value}%", BLUE)
-        self.font.render_to(self.display, [180, 380], f"{self.health_value}%", BLUE)
-        self.font.render_to(self.display, [180, 520], f"{self.money_value}$", BLUE)
+        self.font_50.render_to(self.display, [180, 100], f"{self.happiness_value}%", BLUE)
+        self.font_50.render_to(self.display, [180, 240], f"{self.satiety_value}%", BLUE)
+        self.font_50.render_to(self.display, [180, 380], f"{self.health_value}%", BLUE)
+        self.font_50.render_to(self.display, [180, 520], f"{self.money_value}$", BLUE)
         # TABS -->
         if self.current_tub != 0:
             # TUB №1 -->
             if self.current_tub == 1:
                 self.display.blit(TAB, (0, 0))
                 self.button_eat.render(self.display)
-                self.font.render_to(self.display, [700, 625], self.button_eat.text, BROWN)
+                self.font_50.render_to(self.display, [700, 625], self.button_eat.text, BROWN)
                 colour = BROWN if self.money_value >= self.food_prices[self.option] else RED
-                self.font.render_to(self.display, [705, 270], str(self.food_prices[self.option]), colour)
-                self.font.render_to(self.display, [640, 170], self.food[self.option].text, BROWN)
+                self.font_50.render_to(self.display, [705, 270], str(self.food_prices[self.option]), colour)
+                self.font_50.render_to(self.display, [640, 170], self.food[self.option].text, BROWN)
                 self.food[self.option].render(self.display)
                 self.display.blit(BACK, RECT_BACK)
                 self.display.blit(FORWARD, RECT_FORWARD)
@@ -216,33 +226,39 @@ class Game:
                 self.display.blit(TAB, (0, 0))
                 self.button_buy.render(self.display)
                 self.button_wear.render(self.display)
-                self.font.render_to(self.display, [250, 592], self.button_wear.text, BROWN)
-                self.font.render_to(self.display, [700, 625], self.button_buy.text, BROWN)
-                self.font.render_to(self.display, [585, 170], str(self.items[self.option].text), BROWN)
+                self.font_50.render_to(self.display, [250, 592], self.button_wear.text, BROWN)
+                self.font_50.render_to(self.display, [700, 625], self.button_buy.text, BROWN)
+                self.font_50.render_to(self.display, [585, 170], str(self.items[self.option].text), BROWN)
                 colour = BROWN if self.money_value >= self.clothing_prices[self.option] else RED
-                self.font.render_to(self.display, [705, 270], str(self.clothing_prices[self.option]), colour)
+                self.font_50.render_to(self.display, [705, 270], str(self.clothing_prices[self.option]), colour)
                 self.items[self.option].render(self.display)
                 self.display.blit(BACK, RECT_BACK)
                 self.display.blit(FORWARD, RECT_FORWARD)
-                if self.wear_num == self.option:
+                if self.option in self.wear_num:
                     self.worn_top_label_on.render(self.display)
-                    self.font.render_to(self.display, [1140, 250], self.worn_top_label_on.text, BROWN)
+                    self.font_50.render_to(self.display, [1140, 250], self.worn_top_label_on.text, BROWN)
                 else:
                     self.worn_top_label_off.render(self.display)
-                    self.font.render_to(self.display, [1088, 250], self.worn_top_label_off.text, BROWN)
+                    self.font_50.render_to(self.display, [1088, 250], self.worn_top_label_off.text, BROWN)
                 if self.option in self.purchased_clothes:
                     self.bought_top_label_on.render(self.display)
-                    self.font.render_to(self.display, [1115, 150], self.bought_top_label_on.text, BROWN)
+                    self.font_50.render_to(self.display, [1115, 150], self.bought_top_label_on.text, BROWN)
                 else:
                     self.bought_top_label_off.render(self.display)
-                    self.font.render_to(self.display, [1088, 150], self.bought_top_label_off.text, BROWN)
+                    self.font_50.render_to(self.display, [1088, 150], self.bought_top_label_off.text, BROWN)
             # TAB №3 -->
             elif self.current_tub == 3:
                 self.display.blit(GAME_BACKGROUND, (0, 0))
+
                 self.pet_game.render(self.display)
-                for toy_ in self.toys:
-                    toy_.render(self.display)
-                self.font.render_to(self.display, [175, 128], f"score: {str(self.score_value)}", BROWN)
+                if self.timer <= 3:
+                    self.font_100.render_to(self.display, [675, 328], f"{str(self.timer)}...", BROWN)
+                if self.timer == 4:
+                    self.display.blit(GO, (600, 250))
+                else:
+                    for toy_ in self.toys:
+                        toy_.render(self.display)
+                self.font_50.render_to(self.display, [175, 128], f"score: {str(self.score_value)}", BROWN)
             self.display.blit(EXIT_LOGO, RECT_EXIT)
 
         pg.display.flip()
