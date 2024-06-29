@@ -4,6 +4,7 @@ import pet
 import indicator
 import mini_game
 import random
+import database
 pg.init()
 
 
@@ -57,10 +58,6 @@ class Game:
         # TEXT DATA -->
         self.font_50 = FONT_50
         self.font_100 = FONT_100
-        self.happiness_value = 100
-        self.satiety_value = 100
-        self.health_value = 100
-        self.money_value = 10000
         self.score_value = 0
         self.food_prices = (195, 230, 100, 145, 175, 190)
         self.clothing_prices = (400, 200, 300, 300, 300, 250)
@@ -72,13 +69,23 @@ class Game:
         # OTHER -->
         self.satiety_gone = pg.USEREVENT + 1
         pg.time.set_timer(self.satiety_gone, 3000)
-        self.purchased_clothes = []
         self.wear_num = []
         self.timer = 0
+        self.purchased_clothes = []
+        # DataBase -->
+        self.player_db = database.Database("player.db",
+                                           ["satiety", "money", "happiness", "health"])
+        read_data = self.player_db.read()
+        self.satiety_value = read_data[0]
+        self.money_value = read_data[1]
+        self.happiness_value = read_data[2]
+        self.health_value = read_data[3]
 
     def events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
+                self.player_db.update([self.satiety_value, self.money_value,
+                                       self.happiness_value, self.health_value])
                 pg.quit()
                 exit()
             elif event.type == pg.MOUSEBUTTONDOWN:

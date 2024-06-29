@@ -78,3 +78,6 @@ BLUE_TSHIRT = load_image("images/items/blue t-shirt.png", (350, 600))
 RED_TSHIRT = load_image("images/items/red t-shirt.png", (350, 600))
 YELLOW_TSHIRT = load_image("images/items/yellow t-shirt.png", (350, 600))
 BOOTS = load_image("images/items/boots.png", (410, 410))
+
+# Default -->
+DEFAULT_SET = [100, 10000, 100, 100]
