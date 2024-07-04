@@ -73,19 +73,19 @@ class Game:
         self.timer = 0
         self.purchased_clothes = []
         # DataBase -->
-        self.player_db = database.Database("player.db",
-                                           ["satiety", "money", "happiness", "health"])
-        read_data = self.player_db.read()
-        self.satiety_value = read_data[0]
-        self.money_value = read_data[1]
-        self.happiness_value = read_data[2]
-        self.health_value = read_data[3]
+        self.player_db = database.Database("player.text", ["PlayerID", "satiety", "money", "happiness", "health"])
+        read_data = list(self.player_db.read("User1").values())
+        self.satiety_value = int(read_data[0])
+        self.money_value = int(read_data[1])
+        self.happiness_value = int(read_data[2])
+        self.health_value = int(read_data[3])
 
     def events(self):
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                self.player_db.update([self.satiety_value, self.money_value,
-                                       self.happiness_value, self.health_value])
+                self.player_db.update(["User1", str(self.satiety_value), str(self.money_value),
+                                       str(self.happiness_value), str(self.health_value)])
+                self.player_db.save()
                 pg.quit()
                 exit()
             elif event.type == pg.MOUSEBUTTONDOWN:
