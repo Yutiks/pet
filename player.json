@@ -1,0 +1,28 @@
+{
+   "User1": {
+      "indicators": {
+         "satiety": 89,
+         "money": 9010,
+         "happiness": 100,
+         "health": 100
+      },
+      "clothes": {
+         "purchased_clothes": {
+            ">>Cool Glasses<<": true,
+            ">>Sun Glasses<<": true,
+            ">>blue t-shirt<<": false,
+            ">>red t-shirt<<": true,
+            ">>yellow t-shirt<<": false,
+            ">>cool sneakers<<": true
+         },
+         "worn": {
+            ">>Cool Glasses<<": true,
+            ">>Sun Glasses<<": false,
+            ">>blue t-shirt<<": false,
+            ">>red t-shirt<<": true,
+            ">>yellow t-shirt<<": false,
+            ">>cool sneakers<<": true
+         }
+      }
+   }
+}
